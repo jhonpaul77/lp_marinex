@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarineX — Integrated Ship Fleet Management Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root,[data-theme="dark"]{
+  --bg:#090c12;--bg2:#0e1219;--bg3:#131a24;--bg4:#1a2232;
+  --sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.07);
+  --br:rgba(255,255,255,.08);--br2:rgba(255,255,255,.13);--br3:rgba(255,255,255,.22);
+  --tx:#edf2fa;--tx2:#7a8ca8;--tx3:#3a4d68;
+  --cd:#0e1219;--cd2:#131a24;
+  --nav:rgba(9,12,18,.92);
+  --blue:#3b82f6;--blue2:#60a5fa;--bd:rgba(59,130,246,.1);--bg_:rgba(59,130,246,.22);
+  --teal:#14b8a6;--td:rgba(20,184,166,.1);
+  --amber:#f59e0b;--ad:rgba(245,158,11,.1);
+  --green:#22c55e;--gd:rgba(34,197,94,.1);
+  --red:#ef4444;
+  --sh:0 24px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06);
+}
+[data-theme="light"]{
+  --bg:#f4f6fb;--bg2:#ffffff;--bg3:#edf0f8;--bg4:#e2e8f2;
+  --sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.055);
+  --br:rgba(20,40,100,.09);--br2:rgba(20,40,100,.15);--br3:rgba(20,40,100,.26);
+  --tx:#0d1828;--tx2:#445570;--tx3:#9aaac2;
+  --cd:#ffffff;--cd2:#edf0f8;
+  --nav:rgba(244,246,251,.94);
+  --blue:#1a63cc;--blue2:#1250a8;--bd:rgba(26,99,204,.09);--bg_:rgba(26,99,204,.2);
+  --teal:#0d9488;--td:rgba(13,148,136,.09);
+  --amber:#b45309;--ad:rgba(180,83,9,.09);
+  --green:#16a34a;--gd:rgba(22,163,74,.09);
+  --red:#dc2626;
+  --sh:0 24px 60px rgba(10,20,50,.1),0 0 0 1px rgba(20,40,100,.07);
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);color:var(--tx);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;line-height:1.6;
+}
+a{text-decoration:none;color:inherit}
+::selection{background:rgba(59,130,246,.25);color:var(--tx)}
+*{transition:background-color .25s,border-color .25s,color .25s}
+button,a{transition:all .16s}
+
+/* ── LAYOUT ───────────────────────────────────────────────────── */
+/* Wider: 1300px max + 2.5rem padding */
+.w{max-width:1300px;margin:0 auto;padding:0 2.5rem;position:relative;z-index:1}
+
+/* ── NAV ──────────────────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:60px;display:flex;align-items:center;
+}
+.nav.scrolled{
+  background:var(--nav);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid var(--br);
+  box-shadow:0 1px 0 rgba(59,130,246,.06);
+}
+.nav-inner{display:flex;align-items:center;width:100%;gap:.65rem}
+.logo{display:flex;align-items:center;gap:.65rem;flex-shrink:0}
+.logo-sq{
+  width:32px;height:32px;border-radius:7px;background:var(--blue);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.logo-sq svg{width:16px;height:16px;color:#fff}
+.logo-wm{display:flex;flex-direction:column;line-height:1}
+.logo-name{font-size:.92rem;font-weight:800;color:var(--tx);letter-spacing:-.01em}
+.logo-tag{font-size:.57rem;font-weight:600;color:var(--tx3);letter-spacing:.07em;margin-top:.1rem;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:.05rem;margin-left:1.5rem}
+.nl{font-size:.82rem;font-weight:500;color:var(--tx2);padding:.35rem .72rem;border-radius:6px;cursor:pointer}
+.nl:hover{color:var(--tx);background:var(--sf2)}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:.55rem}
+.lang-tog{display:flex;border:1px solid var(--br2);border-radius:6px;overflow:hidden;background:var(--sf)}
+.lt{font-size:.68rem;font-weight:700;letter-spacing:.06em;padding:.26rem .58rem;border:none;background:transparent;color:var(--tx3);cursor:pointer}
+.lt.on{background:var(--blue);color:#fff}
+.theme-tog{
+  width:30px;height:30px;border-radius:6px;border:1px solid var(--br2);
+  background:var(--sf);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:.85rem;color:var(--tx2);flex-shrink:0;
+}
+.theme-tog:hover{border-color:var(--br3);color:var(--tx)}
+.btn-ghost{
+  font-size:.8rem;font-weight:600;color:var(--tx2);padding:.3rem .8rem;
+  border-radius:6px;border:1px solid var(--br2);background:transparent;cursor:pointer;
+}
+.btn-ghost:hover{color:var(--tx);border-color:var(--br3)}
+.btn-nav{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.8rem;font-weight:700;color:#fff;
+  padding:.34rem 1rem;border-radius:6px;
+  background:var(--blue);border:none;cursor:pointer;
+}
+.btn-nav:hover{background:var(--blue2);box-shadow:0 4px 14px var(--bg_);transform:translateY(-1px)}
+.mob-btn{display:none;background:none;border:none;color:var(--tx2);cursor:pointer;padding:.3rem}
+#mob{
+  display:none;position:fixed;top:60px;inset-x:0;z-index:999;
+  background:var(--nav);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--br);
+  padding:1rem 2rem 1.5rem;flex-direction:column;gap:.2rem;
+}
+#mob .nl{padding:.6rem .72rem;font-size:.88rem}
+#mob .msep{height:1px;background:var(--br);margin:.6rem 0}
+#mob .mr{display:flex;gap:.55rem}
+#mob .mc{display:flex;justify-content:center;gap:.55rem;margin-top:.65rem}
+
+/* ── HERO — 2 COLUMN LAYOUT ───────────────────────────────────── */
+.hero{
+  min-height:100svh;position:relative;
+  display:flex;align-items:center;
+  padding:7.5rem 0 4rem;overflow:hidden;
+}
+/* Background grid */
+.hgrid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(59,130,246,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,.05) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
+}
+[data-theme="light"] .hgrid{
+  background-image:
+    linear-gradient(rgba(26,99,204,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,99,204,.05) 1px,transparent 1px);
+}
+.hglow{
+  position:absolute;top:-20%;right:-5%;
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(59,130,246,.07) 0%,transparent 65%);
+  pointer-events:none;animation:gd 16s ease-in-out infinite alternate;
+}
+@keyframes gd{from{transform:translate(0,0)}to{transform:translate(-30px,20px)}}
+.hglow2{
+  position:absolute;bottom:-20%;left:0%;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(20,184,166,.04) 0%,transparent 65%);
+  pointer-events:none;animation:gd2 20s ease-in-out infinite alternate;
+}
+@keyframes gd2{from{transform:translate(0,0)}to{transform:translate(20px,-15px)}}
+
+/* ══ THE KEY FIX: 2 column hero grid ══ */
+.hero-inner{
+  position:relative;z-index:2;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  align-items:center;
+  width:100%;
+}
+.hero-left{max-width:580px}
+
+/* Badge */
+.hbadge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  border:1px solid var(--br2);border-radius:5px;
+  padding:.28rem .8rem;background:var(--sf);
+  font-size:.7rem;font-weight:700;color:var(--tx2);
+  letter-spacing:.04em;margin-bottom:1.65rem;
+}
+.hbdot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);flex-shrink:0;
+  box-shadow:0 0 6px var(--green);
+  animation:pulse .9s ease-in-out infinite alternate;
+}
+@keyframes pulse{from{box-shadow:0 0 3px var(--green)}to{box-shadow:0 0 10px var(--green),0 0 18px rgba(34,197,94,.3)}}
+
+/* Headline */
+.h-title{
+  font-size:clamp(2.4rem,4.2vw,3.8rem);
+  font-weight:800;line-height:1.0;
+  letter-spacing:-.035em;color:var(--tx);
+  margin-bottom:1.25rem;
+}
+.h-title .blue{color:var(--blue)}
+.h-title .sub{
+  display:block;
+  font-size:.42em;font-weight:400;
+  letter-spacing:-.005em;color:var(--tx2);
+  margin-top:.3em;line-height:1.5;
+}
+
+.h-lead{
+  font-size:.95rem;color:var(--tx2);
+  line-height:1.85;max-width:520px;
+  margin-bottom:1.75rem;
+}
+.h-lead strong{color:var(--tx);font-weight:700}
+
+/* Checks */
+.h-checks{display:flex;flex-wrap:wrap;gap:.4rem .8rem;margin-bottom:2rem}
+.hck{
+  display:flex;align-items:center;gap:.38rem;
+  font-size:.79rem;font-weight:600;color:var(--tx2);
+}
+.hck::before{
+  content:'✓';font-size:.68rem;font-weight:800;
+  color:var(--blue);flex-shrink:0;
+}
+
+/* Buttons */
+.h-btns{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.btn-prim{
+  display:inline-flex;align-items:center;gap:.48rem;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.87rem;font-weight:700;color:#fff;
+  padding:.66rem 1.55rem;border-radius:7px;
+  background:var(--blue);border:none;cursor:pointer;
+  box-shadow:0 2px 10px var(--bg_),inset 0 1px 0 rgba(255,255,255,.15);
+}
+.btn-prim:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 6px 22px var(--bg_)}
+.btn-out{
+  display:inline-flex;align-items:center;gap:.48rem;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:.87rem;font-weight:600;color:var(--tx);
+  padding:.64rem 1.35rem;border-radius:7px;
+  background:var(--sf);border:1px solid var(--br2);cursor:pointer;
+}
+.btn-out:hover{border-color:var(--br3);background:var(--sf2)}
+
+/* KPI bar — FULL WIDTH within left column */
+.h-kpis{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--br2);border-radius:8px;
+  overflow:hidden;background:var(--sf);
+  width:100%;
+}
+.hkpi{padding:.85rem 1rem;border-right:1px solid var(--br)}
+.hkpi:last-child{border-right:none}
+.hkpi-n{
+  font-size:1.45rem;font-weight:800;color:var(--blue);
+  letter-spacing:-.03em;line-height:1;
+}
+.hkpi-l{
+  font-size:.64rem;font-weight:700;color:var(--tx3);
+  margin-top:.22rem;letter-spacing:.04em;text-transform:uppercase;
+}
+
+/* ── HERO RIGHT: Dashboard preview ───────────────────────────── */
+.hero-right{position:relative}
+
+/* Floating labels for context */
+.hero-right::before{
+  content:'';position:absolute;
+  top:-30px;right:-30px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(59,130,246,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* Main dashboard card */
+.dash-main{
+  background:var(--cd);
+  border:1px solid var(--br2);
+  border-radius:12px;overflow:hidden;
+  box-shadow:var(--sh);
+  position:relative;
+}
+.dash-tb{
+  padding:.6rem 1rem;border-bottom:1px solid var(--br);
+  background:var(--bg3);
+  display:flex;align-items:center;gap:.45rem;
+}
+.dtd{width:8px;height:8px;border-radius:50%}
+.dtd:nth-child(1){background:rgba(239,68,68,.6)}
+.dtd:nth-child(2){background:rgba(245,158,11,.6)}
+.dtd:nth-child(3){background:rgba(34,197,94,.6)}
+.dtitle{
+  font-size:.6rem;font-weight:700;color:var(--tx3);
+  flex:1;text-align:center;letter-spacing:.08em;text-transform:uppercase;
+}
+.dash-body{padding:1rem;display:flex;flex-direction:column;gap:.75rem}
+
+/* KPI row inside dashboard */
+.d-krow{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem}
+.dkpi{
+  background:var(--bg3);border:1px solid var(--br);
+  border-radius:7px;padding:.72rem .7rem;
+}
+.dkpi-v{font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+.dkpi-l{font-size:.56rem;font-weight:700;color:var(--tx3);margin-top:.18rem;text-transform:uppercase;letter-spacing:.07em}
+
+/* Mini bar chart */
+.d-chart{background:var(--bg3);border:1px solid var(--br);border-radius:7px;padding:.75rem}
+.d-chart-lbl{font-size:.56rem;font-weight:700;color:var(--tx3);margin-bottom:.55rem;text-transform:uppercase;letter-spacing:.07em}
+.d-bars{display:flex;align-items:flex-end;gap:3px;height:48px}
+.db{flex:1;border-radius:2px 2px 0 0;min-height:3px}
+
+/* Map preview */
+.d-map{
+  background:linear-gradient(135deg,var(--bg2),var(--bg4));
+  border:1px solid var(--br);border-radius:7px;
+  height:90px;position:relative;overflow:hidden;
+}
+.dmg{position:absolute;inset:0;background-image:linear-gradient(var(--br) 1px,transparent 1px),linear-gradient(90deg,var(--br) 1px,transparent 1px);background-size:18px 18px}
+.dmv{position:absolute;font-size:.78rem;animation:vf 3.5s ease-in-out infinite}
+@keyframes vf{0%,100%{transform:translate(0,0)}50%{transform:translate(3px,-3px)}}
+.dmp{position:absolute;width:16px;height:16px;border-radius:50%;border:1px solid var(--blue);opacity:.6;animation:vp 2s ease-out infinite}
+@keyframes vp{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.5);opacity:0}}
+
+/* Status row */
+.d-status{
+  background:var(--gd);border:1px solid rgba(34,197,94,.15);
+  border-radius:6px;padding:.52rem .75rem;
+  display:flex;align-items:center;gap:.5rem;font-size:.7rem;
+}
+.d-sbadge{
+  font-size:.56rem;font-weight:800;padding:.1rem .45rem;
+  border-radius:3px;background:var(--gd);color:var(--green);
+  border:1px solid rgba(34,197,94,.2);margin-left:auto;
+  letter-spacing:.05em;text-transform:uppercase;
+}
+
+/* Floating cards on the side — extra depth */
+.float-card{
+  position:absolute;
+  background:var(--cd);border:1px solid var(--br2);
+  border-radius:10px;padding:.75rem 1rem;
+  box-shadow:0 12px 36px rgba(0,0,0,.4);
+  animation:fc 3s ease-in-out infinite alternate;
+}
+.fc1{top:-24px;right:-24px;min-width:160px}
+.fc2{bottom:-24px;left:-24px;min-width:155px}
+@keyframes fc{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.fcf-val{font-size:1.1rem;font-weight:800;letter-spacing:-.02em;color:var(--blue)}
+.fcf-lbl{font-size:.63rem;font-weight:600;color:var(--tx3);margin-top:.2rem;text-transform:uppercase;letter-spacing:.06em}
+.fc-row{display:flex;align-items:center;gap:.5rem;margin-top:.55rem}
+.fc-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse .9s ease-in-out infinite alternate}
+.fc-txt{font-size:.68rem;font-weight:600;color:var(--green)}
+
+/* Clients trust bar */
+.h-clients{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--br)}
+.hcr{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+.hclbl{font-size:.67rem;font-weight:700;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.hcsep{width:1px;height:16px;background:var(--br)}
+.hclist{display:flex;gap:1.75rem;flex-wrap:wrap}
+.hcitem{font-size:.77rem;font-weight:600;color:var(--tx3);display:flex;align-items:center;gap:.38rem;transition:color .18s}
+.hcitem:hover{color:var(--tx2)}
+
+/* ── PRODUCTS ─────────────────────────────────────────────────── */
+#products{padding:7rem 0;background:var(--bg)}
+.pg{
+  display:flex;flex-direction:column;
+  border:1px solid var(--br2);border-radius:10px;
+  overflow:hidden;background:var(--br);gap:1px;
+}
+.pg-row{display:grid;gap:1px}
+.pg3{grid-template-columns:repeat(3,1fr)}
+.pg2{grid-template-columns:repeat(2,1fr)}
+.pc{
+  background:var(--cd);padding:2rem 1.85rem;
+  display:flex;flex-direction:column;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.pc:hover{background:var(--cd2)}
+.pc::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:3px;
+  background:var(--pcb,var(--blue));
+  opacity:0;transition:opacity .22s;
+}
+.pc:hover::before{opacity:1}
+.pc:nth-child(2){--pcb:var(--teal)}
+.pc:nth-child(3){--pcb:var(--green)}
+.pg2 .pc:nth-child(1){--pcb:var(--amber)}
+.pg2 .pc:nth-child(2){--pcb:var(--tx3)}
+.pc-cat{
+  font-size:.64rem;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--pcc,var(--blue));
+  margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;
+}
+.pc-cat::before{content:'';width:10px;height:2px;background:var(--pcc,var(--blue));border-radius:1px;flex-shrink:0}
+.pc:nth-child(2) .pc-cat{--pcc:var(--teal)}
+.pc:nth-child(3) .pc-cat{--pcc:var(--green)}
+.pg2 .pc:nth-child(1) .pc-cat{--pcc:var(--amber)}
+.pc-name{font-size:1.05rem;font-weight:800;color:var(--tx);margin-bottom:.5rem;letter-spacing:-.02em;line-height:1.2}
+.pc-desc{font-size:.81rem;color:var(--tx2);line-height:1.7;margin-bottom:1.3rem}
+.pc-list{flex:1;display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.5rem}
+.pli{display:flex;align-items:baseline;gap:.5rem;font-size:.78rem;color:var(--tx2)}
+.pli::before{content:'—';font-size:.7rem;color:var(--tx3);flex-shrink:0}
+.pc-act{
+  display:inline-flex;align-items:center;gap:.35rem;
+  font-size:.77rem;font-weight:700;
+  color:var(--pca,var(--blue));margin-top:auto;transition:gap .18s;
+}
+.pc:hover .pc-act{gap:.6rem}
+.pc:nth-child(2) .pc-act{--pca:var(--teal)}
+.pc:nth-child(3) .pc-act{--pca:var(--green)}
+.pg2 .pc:nth-child(1) .pc-act{--pca:var(--amber)}
+.pg2 .pc:nth-child(2) .pc-act{color:var(--tx3)}
+.pc.soon{opacity:.55;cursor:default}
+.pc.soon:hover{background:var(--cd)}
+.pc.soon::before{display:none}
+.spill{
+  display:inline-flex;font-size:.6rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;background:var(--sf);border:1px solid var(--br2);
+  color:var(--tx3);border-radius:3px;padding:.14rem .48rem;margin-left:.4rem;vertical-align:middle;
+}
+
+/* ── SEC HEAD ─────────────────────────────────────────────────── */
+.sh{margin-bottom:3.5rem}
+.sh.c{text-align:center}
+.sh.c .lbl{justify-content:center}
+.sh.c .lbl::before{display:none}
+.sh.c .sp{margin:1rem auto 0;max-width:520px}
+.sh .sp{margin-top:.85rem;max-width:520px}
+.lbl{
+  font-size:.68rem;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--blue);
+  display:inline-flex;align-items:center;gap:.5rem;
+}
+.lbl::before{content:'';width:14px;height:2px;background:var(--blue);border-radius:1px;flex-shrink:0}
+.h2t{font-size:clamp(1.9rem,3.5vw,2.9rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;color:var(--tx)}
+.h2t .ac{color:var(--blue)}
+.h3t{font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:800;line-height:1.1;letter-spacing:-.025em;color:var(--tx)}
+.h3t .ac{color:var(--blue)}
+.bod{font-size:.9rem;color:var(--tx2);line-height:1.75}
+
+/* ── PLATFORM ─────────────────────────────────────────────────── */
+#platform{padding:7rem 0;background:var(--bg2)}
+.plat-g{display:grid;grid-template-columns:1fr 1fr;gap:5.5rem;align-items:center}
+.feat-g{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--br);
+  border:1px solid var(--br2);border-radius:8px;
+  overflow:hidden;margin-top:2.25rem;
+}
+.fg{background:var(--cd);padding:1.3rem;transition:background .2s}
+.fg:hover{background:var(--cd2)}
+.fg-ico{width:30px;height:30px;border-radius:6px;background:var(--bd);border:1px solid rgba(59,130,246,.18);display:flex;align-items:center;justify-content:center;font-size:.87rem;margin-bottom:.8rem}
+.fg-n{font-size:.82rem;font-weight:700;color:var(--tx);margin-bottom:.28rem;letter-spacing:-.01em}
+.fg-d{font-size:.73rem;color:var(--tx2);line-height:1.6}
+
+/* Platform dashboard — same as hero but standalone */
+.plat-dash{
+  background:var(--cd);border:1px solid var(--br2);
+  border-radius:12px;overflow:hidden;box-shadow:var(--sh);
+}
+
+/* ── IoT ──────────────────────────────────────────────────────── */
+#iot{padding:7rem 0;background:var(--bg)}
+.iot-g{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.pivot{display:flex;border-bottom:1px solid var(--br2);margin-bottom:2rem;gap:0}
+.pv{font-size:.82rem;font-weight:600;color:var(--tx3);padding:.52rem 1rem;border:none;background:transparent;cursor:pointer;position:relative;transition:color .18s;white-space:nowrap}
+.pv:hover{color:var(--tx2)}
+.pv.on{color:var(--blue)}
+.pv.on::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--blue);border-radius:2px 2px 0 0}
+.tp{display:none;animation:tpIn .25s ease}
+.tp.on{display:block}
+@keyframes tpIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.tp-h{font-size:1.15rem;font-weight:800;color:var(--tx);margin-bottom:.65rem;letter-spacing:-.02em}
+.tp-d{font-size:.86rem;color:var(--tx2);line-height:1.8;margin-bottom:1.45rem}
+.tp-items{display:flex;flex-direction:column;gap:.5rem}
+.tpi{display:flex;align-items:flex-start;gap:.7rem;padding:.75rem .85rem;background:var(--sf);border:1px solid var(--br);border-radius:7px;transition:all .18s}
+.tpi:hover{border-color:var(--br2);background:var(--sf2)}
+.tpi-ico{width:30px;height:30px;flex-shrink:0;background:var(--bd);border-radius:6px;border:1px solid rgba(59,130,246,.14);display:flex;align-items:center;justify-content:center;font-size:.87rem}
+.tpi-n{font-size:.79rem;font-weight:700;color:var(--tx);margin-bottom:.16rem;letter-spacing:-.005em}
+.tpi-d{font-size:.72rem;color:var(--tx2);line-height:1.55}
+.iot-stack{display:flex;flex-direction:column;gap:.8rem}
+.icard{background:var(--cd);border:1px solid var(--br2);border-radius:9px;overflow:hidden;transition:box-shadow .2s}
+.icard:hover{box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.icard-top{padding:.8rem 1.1rem;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.icard-n{font-size:.77rem;font-weight:700;color:var(--tx)}
+.live{display:flex;align-items:center;gap:.3rem;font-size:.62rem;font-weight:700;color:var(--green);letter-spacing:.06em;text-transform:uppercase}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse .9s ease-in-out infinite alternate}
+.icard-body{padding:.88rem 1.1rem}
+.i-met{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.75rem}
+.im{text-align:center;padding:.55rem .4rem;background:var(--bg3);border-radius:5px;border:1px solid var(--br)}
+.im-v{font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+.im-l{font-size:.56rem;font-weight:700;color:var(--tx3);margin-top:.1rem;text-transform:uppercase;letter-spacing:.07em}
+.spark{display:flex;align-items:flex-end;gap:2px;height:24px}
+.sp{flex:1;border-radius:1px 1px 0 0;background:var(--blue);opacity:.3;transition:height .4s}
+.sp.hi{opacity:.75}
+.gcard{background:var(--cd);border:1px solid var(--br2);border-radius:9px;overflow:hidden;transition:box-shadow .2s}
+.gcard:hover{box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.gcard-top{padding:.75rem 1.1rem;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.gcard-n{font-size:.77rem;font-weight:700;color:var(--tx)}
+.gstat{display:flex;align-items:center;gap:.3rem;font-size:.62rem;font-weight:700;color:var(--blue);letter-spacing:.06em;text-transform:uppercase}
+.gsdot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:pulse .9s ease-in-out infinite alternate}
+.gmap{height:130px;background:linear-gradient(135deg,var(--bg2),var(--bg4));position:relative;overflow:hidden}
+.gmg{position:absolute;inset:0;background-image:linear-gradient(var(--br) 1px,transparent 1px),linear-gradient(90deg,var(--br) 1px,transparent 1px);background-size:20px 20px}
+.gmv{position:absolute;font-size:.8rem;animation:vf 3.5s ease-in-out infinite}
+.gmp{position:absolute;width:16px;height:16px;border-radius:50%;border:1px solid var(--blue);animation:vp 2s ease-out infinite}
+.gmr{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.35),transparent);animation:rp 2.5s ease-in-out infinite}
+@keyframes rp{0%,100%{opacity:.3}50%{opacity:.85}}
+.gfoot{padding:.7rem 1.1rem;display:grid;grid-template-columns:repeat(3,1fr)}
+.gf .gv{font-size:.87rem;font-weight:800;letter-spacing:-.01em;color:var(--tx)}
+.gf .gl{font-size:.57rem;font-weight:700;color:var(--tx3);margin-top:.1rem;text-transform:uppercase;letter-spacing:.07em}
+
+/* ── STATS BAND ───────────────────────────────────────────────── */
+.stats-band{
+  padding:4.5rem 0;
+  border-top:1px solid var(--br);border-bottom:1px solid var(--br);
+  background:var(--bg2);
+}
+/* FULL WIDTH 4-col grid */
+.stats-g{display:grid;grid-template-columns:repeat(4,1fr)}
+.si{text-align:center;padding:1.75rem 1.5rem;border-right:1px solid var(--br);position:relative}
+.si:last-child{border-right:none}
+.si::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--blue);opacity:.2;border-radius:0 0 2px 2px}
+.si-n{font-size:2.6rem;font-weight:800;color:var(--blue);letter-spacing:-.04em;line-height:1}
+.si-l{font-size:.77rem;font-weight:600;color:var(--tx2);margin-top:.4rem}
+
+/* ── SOCIAL PROOF ─────────────────────────────────────────────── */
+#social{padding:7rem 0;background:var(--bg2)}
+.tg{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--br2);
+  border:1px solid var(--br2);border-radius:10px;overflow:hidden;
+}
+.tc{background:var(--cd);padding:2rem;transition:background .2s;position:relative}
+.tc:hover{background:var(--cd2)}
+.tc::before{
+  content:'';position:absolute;top:1.5rem;bottom:1.5rem;left:0;width:3px;
+  background:var(--blue);opacity:.35;border-radius:0 2px 2px 0;
+}
+.stars{display:flex;gap:.18rem;margin-bottom:1.1rem}
+.star{color:var(--amber);font-size:.85rem}
+.tc-q{font-size:.88rem;line-height:1.75;color:var(--tx2);margin-bottom:1.35rem;font-style:italic}
+.tc-q strong{color:var(--tx);font-weight:700;font-style:normal}
+.tc-who{display:flex;align-items:center;gap:.7rem}
+.tc-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#fff;letter-spacing:.02em}
+.tc-n{font-size:.8rem;font-weight:700;color:var(--tx)}
+.tc-r{font-size:.7rem;color:var(--tx3);margin-top:.1rem;font-weight:500}
+
+/* ── FAQ ──────────────────────────────────────────────────────── */
+#faq{padding:7rem 0;background:var(--bg)}
+.faq-l{display:grid;grid-template-columns:1fr 1.7fr;gap:5rem;align-items:start}
+.fl{display:flex;flex-direction:column;gap:.4rem}
+.fi{background:var(--cd);border:1px solid var(--br);border-radius:7px;overflow:hidden;transition:border-color .2s}
+.fi.open{border-color:rgba(59,130,246,.28);background:var(--cd2)}
+.fi-q{width:100%;background:none;border:none;padding:.95rem 1.1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--tx);text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;transition:color .18s}
+.fi-q:hover{color:var(--blue)}
+.fi.open .fi-q{color:var(--blue)}
+.fi-ic{width:18px;height:18px;flex-shrink:0;border-radius:4px;background:var(--sf2);border:1px solid var(--br2);display:flex;align-items:center;justify-content:center;font-size:.55rem;color:var(--tx3);transition:all .22s}
+.fi.open .fi-ic{background:var(--bd);border-color:rgba(59,130,246,.28);color:var(--blue);transform:rotate(180deg)}
+.fi-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.fi.open .fi-a{max-height:250px}
+.fi-ab{padding:.2rem 1.1rem 1.1rem;font-size:.79rem;color:var(--tx2);line-height:1.75}
+
+/* ── CTA ──────────────────────────────────────────────────────── */
+.cta-sec{padding:5.5rem 0 7.5rem;background:var(--bg);position:relative;overflow:hidden}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:350px;border-radius:50%;background:radial-gradient(ellipse,rgba(59,130,246,.06) 0%,transparent 70%);pointer-events:none}
+.cta-box{
+  position:relative;z-index:1;
+  background:var(--cd);border:1px solid var(--br2);
+  border-radius:12px;padding:4.5rem;text-align:center;overflow:hidden;
+}
+.cta-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue2),var(--blue),var(--teal))}
+.cta-pill{
+  display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid rgba(34,197,94,.2);border-radius:4px;
+  padding:.25rem .8rem;font-size:.66rem;font-weight:700;
+  letter-spacing:.08em;color:var(--green);background:var(--gd);
+  text-transform:uppercase;margin-bottom:1.5rem;
+}
+.cta-h{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;color:var(--tx);margin-bottom:1rem}
+.cta-h .ac{color:var(--blue)}
+.cta-sub{font-size:.92rem;color:var(--tx2);line-height:1.8;max-width:480px;margin:0 auto 2.25rem}
+.cta-btns{display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap}
+
+/* ── FOOTER ───────────────────────────────────────────────────── */
+footer{padding:3.5rem 0 2.5rem;border-top:1px solid var(--br);background:var(--bg)}
+.ft-g{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;gap:3rem;margin-bottom:3rem}
+.ft-logo{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem}
+.ft-lsq{width:28px;height:28px;border-radius:5px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.ft-lsq svg{width:13px;height:13px;color:#fff}
+.ft-ln{font-size:.88rem;font-weight:800;color:var(--tx);letter-spacing:-.01em}
+.ft-d{font-size:.76rem;color:var(--tx3);line-height:1.7;margin-bottom:1.25rem}
+.ft-off{margin-bottom:.75rem}
+.ft-on{font-size:.72rem;font-weight:700;color:var(--tx2);margin-bottom:.28rem}
+.ft-od{font-size:.72rem;color:var(--tx3);line-height:1.6}
+.ft-ch{font-size:.64rem;font-weight:800;color:var(--tx2);margin-bottom:.85rem;letter-spacing:.1em;text-transform:uppercase}
+.ft-links{display:flex;flex-direction:column;gap:.42rem}
+.fl2{font-size:.76rem;color:var(--tx3);cursor:pointer;transition:color .18s}
+.fl2:hover{color:var(--blue)}
+.ft-bot{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;border-top:1px solid var(--br);font-size:.72rem;color:var(--tx3);flex-wrap:wrap;gap:1rem}
+.ft-leg{display:flex;gap:1.5rem}
+.ft-leg a{color:var(--tx3);transition:color .18s}
+.ft-leg a:hover{color:var(--tx2)}
+
+/* ── REVEAL ───────────────────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.rv.in{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media(max-width:1100px){
+  .hero-inner{grid-template-columns:1fr;gap:3.5rem}
+  .hero-left{max-width:640px}
+  .hero-right{display:none}/* hide dashboard on tablet */
+  .pg3{grid-template-columns:1fr 1fr}
+  .pg2{grid-template-columns:1fr 1fr}
+  .plat-g{grid-template-columns:1fr;gap:3rem}
+  .iot-g{grid-template-columns:1fr;gap:3rem}
+  .faq-l{grid-template-columns:1fr;gap:3rem}
+  .ft-g{grid-template-columns:1fr 1fr;gap:2rem}
+  .stats-g{grid-template-columns:1fr 1fr}
+  .si:nth-child(2),.si:nth-child(4){border-right:none}
+  .tg{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .nav-links,.nav-r .lang-tog,.nav-r .btn-ghost{display:none}
+  .mob-btn{display:flex}
+  .pg3,.pg2{grid-template-columns:1fr}
+  .h-title{font-size:2.5rem}
+  .cta-box{padding:2.5rem 1.5rem}
+  .ft-g{grid-template-columns:1fr}
+  .ft-bot{flex-direction:column;text-align:center}
+  #products,#platform,#iot,#social,#faq{padding:5rem 0}
+}
+@media(max-width:480px){
+  .w{padding:0 1.25rem}
+  .h-kpis{grid-template-columns:repeat(2,1fr)}
+  .hkpi:nth-child(2){border-right:none}
+  .hkpi:nth-child(3){border-top:1px solid var(--br)}
+  .stats-g{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ═════════════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <div class="w">
+    <div class="nav-inner">
+      <a class="logo" href="#">
+        <div class="logo-sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 17l5-10 4 6 3-4 5 8H3z"/></svg></div>
+        <div class="logo-wm">
+          <span class="logo-name">MarineX</span>
+          <span class="logo-tag">Fleet Intelligence</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a class="nl" href="#products" data-i18n="nav.p">Produk</a>
+        <a class="nl" href="#platform" data-i18n="nav.pl">Platform</a>
+        <a class="nl" href="#iot" data-i18n="nav.iot">IoT</a>
+        <a class="nl" href="#faq" data-i18n="nav.faq">FAQ</a>
+        <a class="nl" href="#cta" data-i18n="nav.pr">Harga</a>
+      </div>
+      <div class="nav-r">
+        <div class="lang-tog">
+          <button class="lt on" id="ltID" onclick="setLang('id')">ID</button>
+          <button class="lt" id="ltEN" onclick="setLang('en')">EN</button>
+        </div>
+        <button class="theme-tog" id="themeBtn" onclick="toggleTheme()">🌙</button>
+        <a class="btn-ghost" href="marinex-app.html" data-i18n="nav.lg">Masuk</a>
+        <button class="btn-nav" onclick="scCta()" data-i18n="nav.ct">Mulai Gratis</button>
+      </div>
+      <button class="mob-btn" onclick="togMob()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+<div id="mob">
+  <a class="nl" href="#products" onclick="clMob()" data-i18n="nav.p">Produk</a>
+  <a class="nl" href="#platform" onclick="clMob()" data-i18n="nav.pl">Platform</a>
+  <a class="nl" href="#iot" onclick="clMob()" data-i18n="nav.iot">IoT</a>
+  <a class="nl" href="#faq" onclick="clMob()" data-i18n="nav.faq">FAQ</a>
+  <a class="nl" href="#cta" onclick="clMob()" data-i18n="nav.pr">Harga</a>
+  <div class="msep"></div>
+  <div class="mr">
+    <a class="btn-ghost" href="marinex-app.html" style="flex:1;text-align:center;padding:.45rem" data-i18n="nav.lg">Masuk</a>
+    <button class="btn-nav" style="flex:1" onclick="scCta();clMob()" data-i18n="nav.ct">Mulai Gratis</button>
+  </div>
+  <div class="mc">
+    <div class="lang-tog">
+      <button class="lt on" id="ltIDm" onclick="setLang('id')">ID</button>
+      <button class="lt" id="ltENm" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="theme-tog" id="themeBtnM" onclick="toggleTheme()">🌙</button>
+  </div>
+</div>
+
+<!-- ══ HERO — 2 COLUMNS ════════════════════════════════════════════════ -->
+<section id="hero" style="padding:0">
+  <div class="hero">
+    <div class="hgrid"></div>
+    <div class="hglow"></div>
+    <div class="hglow2"></div>
+    <div class="w">
+      <div class="hero-inner">
+
+        <!-- LEFT COLUMN: copy -->
+        <div class="hero-left">
+          <div class="hbadge">
+            <span class="hbdot"></span>
+            <span data-i18n="h.badge">Platform IoT Maritim Terpercaya · Indonesia</span>
+          </div>
+
+          <h1 class="h-title">
+            <span data-i18n="h.h1">Kelola Armada</span>
+            <span class="blue" data-i18n="h.h2"> Lebih Efisien</span>
+            <span class="sub" data-i18n="h.h3">Integrated Ship Fleet Management &amp; IoT Platform</span>
+          </h1>
+
+          <p class="h-lead" data-i18n="h.lead">
+            Ekosistem lengkap untuk <strong>Ship Management System</strong> — PMS, ISM Code Compliance, Document Management, Crew Management — dilengkapi <strong>Live Engine Monitoring</strong>, GPS Fleet Visibility, dan Fuel Efficiency Tracking secara real-time.
+          </p>
+
+          <div class="h-checks">
+            <span class="hck" data-i18n="h.c1">Hemat hingga 40% biaya operasional</span>
+            <span class="hck" data-i18n="h.c2">Monitoring real-time 24/7</span>
+            <span class="hck" data-i18n="h.c3">ISM Code &amp; SOLAS compliant</span>
+            <span class="hck" data-i18n="h.c4">Integrasi sensor IoT yang sudah ada</span>
+          </div>
+
+          <div class="h-btns">
+            <button class="btn-prim" onclick="window.location.href='marinex-app.html'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span data-i18n="h.cta1">Mulai Demo Gratis</span>
+            </button>
+            <button class="btn-out" onclick="scCta()"><span data-i18n="h.cta2">Lihat Paket &amp; Harga</span></button>
+          </div>
+
+          <!-- Full-width KPI bar -->
+          <div class="h-kpis">
+            <div class="hkpi"><div class="hkpi-n">500+</div><div class="hkpi-l" data-i18n="k1">Kapal Terpantau</div></div>
+            <div class="hkpi"><div class="hkpi-n">2,000+</div><div class="hkpi-l" data-i18n="k2">Sensor IoT Aktif</div></div>
+            <div class="hkpi"><div class="hkpi-n">99.8%</div><div class="hkpi-l" data-i18n="k3">Uptime System</div></div>
+            <div class="hkpi"><div class="hkpi-n">24/7</div><div class="hkpi-l" data-i18n="k4">Support</div></div>
+          </div>
+
+          <div class="h-clients rv">
+            <div class="hcr">
+              <span class="hclbl" data-i18n="cl.l">Dipercaya oleh</span>
+              <div class="hcsep"></div>
+              <div class="hclist">
+                <span class="hcitem">🚢 <span data-i18n="cl.1">Shipping Companies</span></span>
+                <span class="hcitem">⚙️ <span data-i18n="cl.2">Marine Engineering</span></span>
+                <span class="hcitem">🏭 <span data-i18n="cl.3">Port Operations</span></span>
+                <span class="hcitem">📦 <span data-i18n="cl.4">Fleet Management</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: live dashboard preview -->
+        <div class="hero-right">
+          <!-- Floating card top-right -->
+          <div class="float-card fc1">
+            <div class="fcf-val">98.2%</div>
+            <div class="fcf-lbl" data-i18n="fc1.l">ISM Compliance</div>
+            <div class="fc-row"><span class="fc-dot"></span><span class="fc-txt" data-i18n="fc1.s">All requirements met</span></div>
+          </div>
+
+          <div class="dash-main">
+            <div class="dash-tb">
+              <div class="dtd"></div><div class="dtd"></div><div class="dtd"></div>
+              <div class="dtitle">MarineX Dashboard — Live</div>
+            </div>
+            <div class="dash-body">
+              <div class="d-krow">
+                <div class="dkpi"><div class="dkpi-v" style="color:var(--blue)">247</div><div class="dkpi-l">PMS Tasks</div></div>
+                <div class="dkpi"><div class="dkpi-v" style="color:var(--green)">98.2%</div><div class="dkpi-l">Compliance</div></div>
+                <div class="dkpi"><div class="dkpi-v" style="color:var(--amber)">1,842</div><div class="dkpi-l">Documents</div></div>
+              </div>
+              <div class="d-chart">
+                <div class="d-chart-lbl">Maintenance Schedule — 12 Months</div>
+                <div class="d-bars" id="heroBars"></div>
+              </div>
+              <div class="d-map">
+                <div class="dmg"></div>
+                <div class="dmv" style="top:32%;left:43%">⛵</div>
+                <div class="dmv" style="top:54%;left:24%;animation-delay:.6s">🛢</div>
+                <div class="dmv" style="top:26%;left:63%;animation-delay:1.2s">⛴️</div>
+                <div class="dmp" style="top:calc(32% - 8px);left:calc(43% - 8px)"></div>
+              </div>
+              <div class="d-status">
+                <span>✅</span>
+                <span style="flex:1;color:var(--tx2);font-size:.7rem" data-i18n="d.alert">ISM Code audit completed — all 24 requirements met</span>
+                <span class="d-sbadge" data-i18n="d.badge">Compliant</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating card bottom-left -->
+          <div class="float-card fc2" style="animation-delay:.5s">
+            <div class="fcf-val" style="color:var(--green)">↓ 38%</div>
+            <div class="fcf-lbl" data-i18n="fc2.l">Fuel Savings</div>
+            <div class="fc-row" style="margin-top:.4rem">
+              <div class="spark" id="heroSpark" style="height:22px;flex:1"></div>
+            </div>
+          </div>
+        </div>
+        <!-- end right column -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRODUCTS ════════════════════════════════════════════════════════ -->
+<section id="products">
+  <div class="w">
+    <div class="sh c rv">
+      <div class="lbl" data-i18n="pr.lbl">Produk Kami</div>
+      <h2 class="h2t" style="margin-top:.85rem" data-i18n="pr.h">Lima Solusi <span class="ac">Terintegrasi</span> untuk Operasional Kapal</h2>
+      <p class="bod sp" data-i18n="pr.sub">Dari manajemen armada, kepatuhan regulasi, planned maintenance, hingga IoT monitoring — semua terhubung dalam satu ekosistem.</p>
+    </div>
+    <div class="pg rv">
+      <div class="pg-row pg3">
+        <div class="pc">
+          <div class="pc-cat" data-i18n="p1.c">VesMan</div>
+          <div class="pc-name" data-i18n="p1.n">Vessel Management</div>
+          <p class="pc-desc" data-i18n="p1.d">Platform terpusat untuk mengelola seluruh operasional armada — crew, laporan, dan visibilitas fleet dari satu dashboard.</p>
+          <div class="pc-list"><div class="pli" data-i18n="p1.f1">Ship Management System</div><div class="pli" data-i18n="p1.f2">Crew Management</div><div class="pli" data-i18n="p1.f3">Fleet Visibility Dashboard</div><div class="pli" data-i18n="p1.f4">Operational Reporting</div></div>
+          <div class="pc-act"><span data-i18n="lm">Pelajari lebih lanjut</span> →</div>
+        </div>
+        <div class="pc">
+          <div class="pc-cat" data-i18n="p2.c">VesTrack</div>
+          <div class="pc-name" data-i18n="p2.n">Vessel Tracking</div>
+          <p class="pc-desc" data-i18n="p2.d">Pantau posisi GPS, kondisi mesin via IoT, dan konsumsi bahan bakar seluruh armada secara real-time.</p>
+          <div class="pc-list"><div class="pli" data-i18n="p2.f1">Real-time GPS Positioning</div><div class="pli" data-i18n="p2.f2">Live Engine Monitoring (IoT)</div><div class="pli" data-i18n="p2.f3">Fuel Efficiency Tracking</div><div class="pli" data-i18n="p2.f4">Geofence & Auto Alerts</div></div>
+          <div class="pc-act"><span data-i18n="lm">Pelajari lebih lanjut</span> →</div>
+        </div>
+        <div class="pc">
+          <div class="pc-cat" data-i18n="p3.c">PMS</div>
+          <div class="pc-name" data-i18n="p3.n">Planned Maintenance System</div>
+          <p class="pc-desc" data-i18n="p3.d">Jadwal perawatan terencana, manajemen dokumen teknis, dan pengadaan spare parts dalam satu sistem.</p>
+          <div class="pc-list"><div class="pli" data-i18n="p3.f1">Planned Maintenance System</div><div class="pli" data-i18n="p3.f2">Document Management</div><div class="pli" data-i18n="p3.f3">Procurement Management</div><div class="pli" data-i18n="p3.f4">Spare Parts Inventory</div></div>
+          <div class="pc-act"><span data-i18n="lm">Pelajari lebih lanjut</span> →</div>
+        </div>
+      </div>
+      <div class="pg-row pg2">
+        <div class="pc">
+          <div class="pc-cat" data-i18n="p4.c">ISM Code</div>
+          <div class="pc-name" data-i18n="p4.n">ISM Code Compliance</div>
+          <p class="pc-desc" data-i18n="p4.d">Pastikan kapal selalu patuh terhadap standar SOLAS & MARPOL secara otomatis — audit trail, dokumentasi, dan laporan compliance langsung dari dashboard.</p>
+          <div class="pc-list"><div class="pli" data-i18n="p4.f1">ISM Code Documentation</div><div class="pli" data-i18n="p4.f2">Automated Audit Trail</div><div class="pli" data-i18n="p4.f3">Compliance Reporting (SOLAS & MARPOL)</div><div class="pli" data-i18n="p4.f4">Safety Management System</div></div>
+          <div class="pc-act"><span data-i18n="lm">Pelajari lebih lanjut</span> →</div>
+        </div>
+        <div class="pc soon">
+          <div class="pc-cat" style="color:var(--tx3)">Depo Mgmt <span class="spill" data-i18n="soon">Segera Hadir</span></div>
+          <div class="pc-name" data-i18n="p5.n">Depo Management System</div>
+          <p class="pc-desc" data-i18n="p5.d">Manajemen depot terintegrasi untuk inventory, penyimpanan bahan bakar, dan supply chain. Sedang dalam pengembangan.</p>
+          <div class="pc-list"><div class="pli" data-i18n="p5.f1">Inventory Management</div><div class="pli" data-i18n="p5.f2">Fuel Storage Management</div><div class="pli" data-i18n="p5.f3">Supply Chain Optimization</div><div class="pli" data-i18n="p5.f4">Multi-Depot Management</div></div>
+          <div class="pc-act" style="color:var(--tx3)"><span data-i18n="soon">Segera Hadir</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PLATFORM ════════════════════════════════════════════════════════ -->
+<section id="platform">
+  <div class="w">
+    <div class="plat-g">
+      <div>
+        <div class="lbl rv" data-i18n="pl.lbl">Ship Management System</div>
+        <h2 class="h2t rv" style="margin-top:.85rem" data-i18n="pl.h">Satu Dashboard untuk <span class="ac">Semua</span></h2>
+        <p class="bod rv" style="margin-top:1rem;max-width:440px" data-i18n="pl.sub">Pantau mesin secara real-time, kelola crew, tracking bahan bakar, dan akses semua dokumen penting — dari satu dashboard terpusat. Keputusan operasional lebih cepat dan akurat.</p>
+        <div class="feat-g">
+          <div class="fg rv d1"><div class="fg-ico">🔧</div><div class="fg-n" data-i18n="fg1.n">Planned Maintenance</div><div class="fg-d" data-i18n="fg1.d">Jadwal otomatis, spare parts terkelola, uptime meningkat.</div></div>
+          <div class="fg rv d2"><div class="fg-ico">📋</div><div class="fg-n" data-i18n="fg2.n">ISM Code</div><div class="fg-d" data-i18n="fg2.d">Audit trail & laporan SOLAS/MARPOL otomatis.</div></div>
+          <div class="fg rv d1"><div class="fg-ico">📄</div><div class="fg-n" data-i18n="fg3.n">Document Mgmt</div><div class="fg-d" data-i18n="fg3.d">Penyimpanan terpusat dengan version control penuh.</div></div>
+          <div class="fg rv d2"><div class="fg-ico">🛒</div><div class="fg-n" data-i18n="fg4.n">Procurement</div><div class="fg-d" data-i18n="fg4.d">Order tracking hingga vendor management.</div></div>
+        </div>
+        <div style="margin-top:2rem" class="rv">
+          <button class="btn-prim" onclick="window.location.href='marinex-app.html'"><span data-i18n="h.cta1">Mulai Demo Gratis</span></button>
+        </div>
+      </div>
+      <div class="rv">
+        <div class="plat-dash">
+          <div class="dash-tb">
+            <div class="dtd"></div><div class="dtd"></div><div class="dtd"></div>
+            <div class="dtitle">MarineX — VesMan Dashboard</div>
+          </div>
+          <div class="dash-body">
+            <div class="d-krow">
+              <div class="dkpi"><div class="dkpi-v" style="color:var(--blue)">247</div><div class="dkpi-l">PMS Tasks</div></div>
+              <div class="dkpi"><div class="dkpi-v" style="color:var(--green)">98.2%</div><div class="dkpi-l">Compliance</div></div>
+              <div class="dkpi"><div class="dkpi-v" style="color:var(--amber)">1,842</div><div class="dkpi-l">Documents</div></div>
+            </div>
+            <div class="d-chart">
+              <div class="d-chart-lbl">Maintenance Schedule — 12 Months</div>
+              <div class="d-bars" id="platBars"></div>
+            </div>
+            <div class="d-map">
+              <div class="dmg"></div>
+              <div class="dmv" style="top:32%;left:43%">⛵</div>
+              <div class="dmv" style="top:54%;left:24%;animation-delay:.6s">🛢</div>
+              <div class="dmv" style="top:26%;left:63%;animation-delay:1.2s">⛴️</div>
+              <div class="dmp" style="top:calc(32% - 8px);left:calc(43% - 8px)"></div>
+            </div>
+            <div class="d-status">
+              <span>✅</span>
+              <span style="flex:1;color:var(--tx2);font-size:.7rem" data-i18n="d.alert">ISM Code audit completed — all 24 requirements met</span>
+              <span class="d-sbadge" data-i18n="d.badge">Compliant</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ IoT ══════════════════════════════════════════════════════════════ -->
+<section id="iot">
+  <div class="w">
+    <div class="sh c rv">
+      <div class="lbl" data-i18n="io.lbl">IoT Dashboard</div>
+      <h2 class="h2t" style="margin-top:.85rem" data-i18n="io.h">Data Real-Time, <span class="ac">Keputusan Lebih Cepat</span></h2>
+      <p class="bod sp" data-i18n="io.sub">Sensor IoT terdepan mengirimkan data kondisi mesin, posisi, dan efisiensi bahan bakar langsung ke dashboard Anda.</p>
+    </div>
+    <div class="iot-g">
+      <div class="rv">
+        <div class="pivot">
+          <button class="pv on" onclick="swTab('engine',this)" data-i18n="tab.e">Live Engine</button>
+          <button class="pv" onclick="swTab('gps',this)" data-i18n="tab.g">GPS</button>
+          <button class="pv" onclick="swTab('fuel',this)" data-i18n="tab.f">Fuel</button>
+          <button class="pv" onclick="swTab('crew',this)" data-i18n="tab.c">Crew</button>
+        </div>
+        <div class="tp on" id="tp-engine">
+          <div class="tp-h" data-i18n="tp1.h">Live Engine Monitoring</div>
+          <p class="tp-d" data-i18n="tp1.d">Data RPM, tekanan, suhu, dan parameter kritis dikirim langsung dari sensor IoT secara real-time ke dashboard.</p>
+          <div class="tp-items">
+            <div class="tpi"><div class="tpi-ico">⚡</div><div><div class="tpi-n" data-i18n="tp1.n1">RPM & Engine Load</div><div class="tpi-d" data-i18n="tp1.d1">Alert otomatis jika melampaui threshold yang ditentukan.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">🌡️</div><div><div class="tpi-n" data-i18n="tp1.n2">Temperatur & Tekanan</div><div class="tpi-d" data-i18n="tp1.d2">Sensor pada seluruh komponen kritikal mesin kapal.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">🔔</div><div><div class="tpi-n" data-i18n="tp1.n3">Alert Anomali Otomatis</div><div class="tpi-d" data-i18n="tp1.d3">Notifikasi real-time sebelum terjadi breakdown.</div></div></div>
+          </div>
+        </div>
+        <div class="tp" id="tp-gps">
+          <div class="tp-h" data-i18n="tp2.h">GPS Fleet Visibility</div>
+          <p class="tp-d" data-i18n="tp2.d">Posisi, heading, dan kecepatan seluruh armada terpantau 24/7 dari shore management.</p>
+          <div class="tp-items">
+            <div class="tpi"><div class="tpi-ico">📍</div><div><div class="tpi-n" data-i18n="tp2.n1">Real-time Positioning</div><div class="tpi-d" data-i18n="tp2.d1">Posisi diperbarui setiap menit dari GPS sensor.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">🗺️</div><div><div class="tpi-n" data-i18n="tp2.n2">Geofence & Route</div><div class="tpi-d" data-i18n="tp2.d2">Peringatan otomatis jika kapal keluar zona operasi.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">⛵</div><div><div class="tpi-n" data-i18n="tp2.n3">Fleet Overview</div><div class="tpi-d" data-i18n="tp2.d3">Semua kapal dalam satu tampilan peta real-time.</div></div></div>
+          </div>
+        </div>
+        <div class="tp" id="tp-fuel">
+          <div class="tp-h" data-i18n="tp3.h">Fuel Efficiency Tracking</div>
+          <p class="tp-d" data-i18n="tp3.d">Data flowmeter real-time untuk hemat hingga 40% biaya BBM.</p>
+          <div class="tp-items">
+            <div class="tpi"><div class="tpi-ico">⛽</div><div><div class="tpi-n" data-i18n="tp3.n1">Flowmeter Real-time</div><div class="tpi-d" data-i18n="tp3.d1">Konsumsi BBM diukur setiap saat dengan akurasi tinggi.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">📊</div><div><div class="tpi-n" data-i18n="tp3.n2">Fuel Analytics</div><div class="tpi-d" data-i18n="tp3.d2">Laporan harian, mingguan, bulanan dengan rekomendasi.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">💹</div><div><div class="tpi-n" data-i18n="tp3.n3">Cost Optimization</div><div class="tpi-d" data-i18n="tp3.d3">Hemat 30–40% biaya BBM dengan identifikasi pola konsumsi.</div></div></div>
+          </div>
+        </div>
+        <div class="tp" id="tp-crew">
+          <div class="tp-h" data-i18n="tp4.h">Crew Management</div>
+          <p class="tp-d" data-i18n="tp4.d">Sertifikat, jadwal dinas, dan dokumen crew seluruh armada dari satu platform.</p>
+          <div class="tp-items">
+            <div class="tpi"><div class="tpi-ico">👨‍✈️</div><div><div class="tpi-n" data-i18n="tp4.n1">Sertifikat & Kompetensi</div><div class="tpi-d" data-i18n="tp4.d1">Tracking masa berlaku dengan notifikasi renewal otomatis.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">📅</div><div><div class="tpi-n" data-i18n="tp4.n2">Jadwal & Rotasi</div><div class="tpi-d" data-i18n="tp4.d2">Manajemen jadwal dinas dan rotasi crew armada.</div></div></div>
+            <div class="tpi"><div class="tpi-ico">📁</div><div><div class="tpi-n" data-i18n="tp4.n3">Digital Crew Files</div><div class="tpi-d" data-i18n="tp4.d3">Dokumen crew digital — akses kapan saja dari mana saja.</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="iot-stack rv">
+        <div class="icard">
+          <div class="icard-top">
+            <div class="icard-n">⚙️ MT Pertamina 05 — Main Engine</div>
+            <div class="live"><span class="ldot"></span>LIVE</div>
+          </div>
+          <div class="icard-body">
+            <div class="i-met">
+              <div class="im"><div class="im-v" style="color:var(--blue)">1,842</div><div class="im-l">RPM</div></div>
+              <div class="im"><div class="im-v" style="color:var(--green)">82°C</div><div class="im-l">Temp</div></div>
+              <div class="im"><div class="im-v" style="color:var(--amber)">6.4 bar</div><div class="im-l">Press</div></div>
+            </div>
+            <div class="spark" id="sparkEl"></div>
+          </div>
+        </div>
+        <div class="gcard">
+          <div class="gcard-top">
+            <div class="gcard-n">🗺️ <span data-i18n="gps.t">Fleet GPS — 7 Vessels</span></div>
+            <div class="gstat"><span class="gsdot"></span><span data-i18n="gps.s">All Tracking</span></div>
+          </div>
+          <div class="gmap">
+            <div class="gmg"></div>
+            <div class="gmv" style="top:28%;left:38%">⛵</div>
+            <div class="gmv" style="top:52%;left:58%;animation-delay:.7s">🛢</div>
+            <div class="gmv" style="top:38%;left:18%;animation-delay:1.4s">⛴️</div>
+            <div class="gmp" style="top:calc(28% - 8px);left:calc(38% - 8px)"></div>
+            <div class="gmr" style="top:33%;left:20%;width:35%"></div>
+          </div>
+          <div class="gfoot">
+            <div class="gf"><div class="gv" style="color:var(--green)">4</div><div class="gl" data-i18n="gps.sa">Berlayar</div></div>
+            <div class="gf"><div class="gv" style="color:var(--amber)">3</div><div class="gl" data-i18n="gps.an">Berlabuh</div></div>
+            <div class="gf"><div class="gv" style="color:var(--blue)">7.2 kn</div><div class="gl" data-i18n="gps.sp">Avg Speed</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS ════════════════════════════════════════════════════════════ -->
+<div class="stats-band">
+  <div class="w">
+    <div class="stats-g">
+      <div class="si rv"><div class="si-n">500+</div><div class="si-l" data-i18n="k1">Kapal Terpantau</div></div>
+      <div class="si rv d1"><div class="si-n">2,000+</div><div class="si-l" data-i18n="k2">Sensor IoT Aktif</div></div>
+      <div class="si rv d2"><div class="si-n">99.8%</div><div class="si-l" data-i18n="k3">Uptime System</div></div>
+      <div class="si rv d3"><div class="si-n">24/7</div><div class="si-l" data-i18n="k4">Technical Support</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SOCIAL PROOF ════════════════════════════════════════════════════ -->
+<section id="social">
+  <div class="w">
+    <div class="sh c rv">
+      <div class="lbl" data-i18n="ts.lbl">Dari Klien Kami</div>
+      <h2 class="h2t" style="margin-top:.85rem" data-i18n="ts.h">Dipercaya Profesional Maritim</h2>
+      <p class="bod sp" data-i18n="ts.sub">Hasil nyata dari pelaut dan engineer yang menggunakan MarineX setiap hari.</p>
+    </div>
+    <div class="tg">
+      <div class="tc rv d1">
+        <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="tc-q" data-i18n="t1.q">"Monitoring mesin dan GPS real-time mengubah cara kami beroperasi. Deteksi masalah lebih awal, <strong>efisiensi bahan bakar meningkat 35%</strong> dalam tiga bulan pertama."</p>
+        <div class="tc-who"><div class="tc-av">BS</div><div><div class="tc-n" data-i18n="t1.n">Capt. Budi Santoso</div><div class="tc-r" data-i18n="t1.r">Master, PT Maju Jaya Shipping</div></div></div>
+      </div>
+      <div class="tc rv d2">
+        <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="tc-q" data-i18n="t2.q">"ISM Code compliance yang dulunya makan waktu berhari-hari, <strong>sekarang selesai dalam hitungan jam</strong>. Alert PMS otomatis juga sangat efektif mencegah breakdown tak terduga."</p>
+        <div class="tc-who"><div class="tc-av">SN</div><div><div class="tc-n" data-i18n="t2.n">Ir. Siti Nurhaliza</div><div class="tc-r" data-i18n="t2.r">Chief Engineer, PT Global Maritime</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ═════════════════════════════════════════════════════════════ -->
+<section id="faq">
+  <div class="w">
+    <div class="faq-l">
+      <div>
+        <div class="lbl rv" data-i18n="fq.lbl">FAQ</div>
+        <h2 class="h3t rv" style="margin-top:.85rem" data-i18n="fq.h">Pertanyaan yang Sering Diajukan</h2>
+        <p class="bod rv" style="margin-top:.9rem;max-width:280px" data-i18n="fq.sub">Butuh bantuan lebih lanjut? Tim kami siap 24/7.</p>
+        <div style="margin-top:2.25rem" class="rv"><button class="btn-prim" onclick="scCta()"><span data-i18n="fq.cta">Hubungi Tim Kami</span></button></div>
+      </div>
+      <div class="fl rv">
+        <div class="fi open"><button class="fi-q" onclick="togFaq(this)"><span data-i18n="fq.q1">Apa perbedaan VesMan, VesTrack, PMS, dan ISM Code?</span><span class="fi-ic">▾</span></button><div class="fi-a"><div class="fi-ab" data-i18n="fq.a1">VesMan adalah platform manajemen armada terpusat. VesTrack fokus pada GPS & IoT monitoring real-time. PMS mengelola perawatan, dokumen, dan procurement. ISM Code Compliance memastikan kepatuhan SOLAS & MARPOL otomatis. Keempatnya terintegrasi penuh dalam ekosistem MarineX.</div></div></div>
+        <div class="fi"><button class="fi-q" onclick="togFaq(this)"><span data-i18n="fq.q2">Bisakah sistem terintegrasi dengan sensor IoT yang sudah ada?</span><span class="fi-ic">▾</span></button><div class="fi-a"><div class="fi-ab" data-i18n="fq.a2">Ya. MarineX mendukung integrasi dengan berbagai merek sensor IoT. Tim teknis kami akan assessment dan konfigurasi tanpa perlu mengganti sensor yang sudah terpasang.</div></div></div>
+        <div class="fi"><button class="fi-q" onclick="togFaq(this)"><span data-i18n="fq.q3">Berapa penghematan bahan bakar yang bisa dicapai?</span><span class="fi-ic">▾</span></button><div class="fi-a"><div class="fi-ab" data-i18n="fq.a3">Rata-rata klien menghemat 30–40% biaya bahan bakar. Sensor flowmeter real-time dikombinasikan dengan data kecepatan dan beban mesin untuk mengidentifikasi inefisiensi secara tepat.</div></div></div>
+        <div class="fi"><button class="fi-q" onclick="togFaq(this)"><span data-i18n="fq.q4">Kapan Depo Management System tersedia?</span><span class="fi-ic">▾</span></button><div class="fi-a"><div class="fi-ab" data-i18n="fq.a4">Depo Management System sedang dalam tahap pengembangan akhir. Daftarkan diri untuk notifikasi peluncuran dan akses early bird dengan harga khusus.</div></div></div>
+        <div class="fi"><button class="fi-q" onclick="togFaq(this)"><span data-i18n="fq.q5">Bagaimana support 24/7 bekerja?</span><span class="fi-ic">▾</span></button><div class="fi-a"><div class="fi-ab" data-i18n="fq.a5">Tim technical support MarineX siap 24/7 via WhatsApp, email, dan telepon. Paket Pro mendapatkan dedicated support engineer khusus untuk armada Anda.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══════════════════════════════════════════════════════════════ -->
+<section class="cta-sec" id="cta">
+  <div class="cta-glow"></div>
+  <div class="w">
+    <div class="cta-box rv">
+      <div class="cta-pill"><span data-i18n="ct.pill">Siap Memulai?</span></div>
+      <h2 class="cta-h"><span data-i18n="ct.h1">Tingkatkan Efisiensi Armada</span><br><span class="ac" data-i18n="ct.h2">Mulai Hari Ini</span></h2>
+      <p class="cta-sub" data-i18n="ct.sub">Bergabunglah dengan ratusan perusahaan maritim yang telah meningkatkan efisiensi operasional dan menurunkan biaya hingga 40% menggunakan MarineX.</p>
+      <div class="cta-btns">
+        <button class="btn-prim" onclick="window.location.href='marinex-app.html'"><span data-i18n="h.cta1">Mulai Demo Gratis</span></button>
+        <button class="btn-out" onclick="window.open('https://wa.me/62315961234')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.93a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+          <span data-i18n="h.cta2">Hubungi Sales</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ═══════════════════════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="w">
+    <div class="ft-g">
+      <div>
+        <div class="ft-logo"><div class="ft-lsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 17l5-10 4 6 3-4 5 8H3z"/></svg></div><span class="ft-ln">MarineX</span></div>
+        <p class="ft-d" data-i18n="ft.d">Integrated Ship Fleet Management Platform — mengoptimalkan operasional kapal dengan teknologi IoT terdepan.</p>
+        <div class="ft-off"><div class="ft-on">📍 <span data-i18n="ft.o1">Kantor Surabaya</span></div><div class="ft-od">Western Village A5 No. 4, Benowo<br>Surabaya 60198 · +62 31 596 1234</div></div>
+        <div class="ft-off"><div class="ft-on">📍 <span data-i18n="ft.o2">Kantor Jakarta</span></div><div class="ft-od">18 Parc Place, SCBD Tower B Lt. 2<br>Jl. Jend. Sudirman Kav. 52–53 · +62 21 401 0400</div></div>
+      </div>
+      <div>
+        <div class="ft-ch" data-i18n="ft.p">Produk</div>
+        <div class="ft-links"><span class="fl2">VesMan — Vessel Management</span><span class="fl2">VesTrack — Fleet Tracking</span><span class="fl2">PMS — Planned Maintenance</span><span class="fl2">ISM Code Compliance</span><span class="fl2" style="opacity:.5">Depo Management (Soon)</span></div>
+      </div>
+      <div>
+        <div class="ft-ch" data-i18n="ft.f">Fitur</div>
+        <div class="ft-links"><span class="fl2">Live Engine Monitoring</span><span class="fl2">GPS Fleet Visibility</span><span class="fl2">Fuel Efficiency Tracking</span><span class="fl2">Crew Management</span><span class="fl2">Document Management</span></div>
+      </div>
+      <div>
+        <div class="ft-ch" data-i18n="ft.c">Perusahaan</div>
+        <div class="ft-links"><span class="fl2" data-i18n="ft.a">Tentang MarineX</span><span class="fl2" data-i18n="ft.b">Blog & Insights</span><span class="fl2" data-i18n="ft.ca">Karir</span><span class="fl2" data-i18n="ft.pp">Partner Program</span><a class="fl2" href="marinex-app.html">Fleet Tracking App</a></div>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span>© 2026 MarineX. All rights reserved.</span>
+      <div class="ft-leg"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Cookie Policy</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── i18n ────────────────────────────────────────────────────────
+const T={
+  id:{
+    "nav.p":"Produk","nav.pl":"Platform","nav.iot":"IoT","nav.faq":"FAQ","nav.pr":"Harga","nav.lg":"Masuk","nav.ct":"Mulai Gratis",
+    "h.badge":"Platform IoT Maritim Terpercaya · Indonesia",
+    "h.h1":"Kelola Armada","h.h2":" Lebih Efisien","h.h3":"Integrated Ship Fleet Management & IoT Platform",
+    "h.lead":"Ekosistem lengkap untuk Ship Management System — PMS, ISM Code Compliance, Document Management, Crew Management — dilengkapi Live Engine Monitoring, GPS Fleet Visibility, dan Fuel Efficiency Tracking secara real-time.",
+    "h.c1":"Hemat hingga 40% biaya operasional","h.c2":"Monitoring real-time 24/7","h.c3":"ISM Code & SOLAS compliant","h.c4":"Integrasi sensor IoT yang sudah ada",
+    "h.cta1":"Mulai Demo Gratis","h.cta2":"Lihat Paket & Harga",
+    "k1":"Kapal Terpantau","k2":"Sensor IoT Aktif","k3":"Uptime System","k4":"Technical Support",
+    "cl.l":"Dipercaya oleh","cl.1":"Shipping Companies","cl.2":"Marine Engineering","cl.3":"Port Operations","cl.4":"Fleet Management",
+    "fc1.l":"ISM Compliance","fc1.s":"All requirements met","fc2.l":"Fuel Savings",
+    "d.alert":"ISM Code audit completed — all 24 requirements met","d.badge":"Compliant",
+    "pr.lbl":"Produk Kami","pr.h":"Lima Solusi Terintegrasi untuk Operasional Kapal",
+    "pr.sub":"Dari manajemen armada, kepatuhan regulasi, planned maintenance, hingga IoT monitoring — semua terhubung dalam satu ekosistem.",
+    "lm":"Pelajari lebih lanjut","soon":"Segera Hadir",
+    "p1.c":"VesMan","p1.n":"Vessel Management","p1.d":"Platform terpusat untuk mengelola seluruh operasional armada — crew, laporan, dan visibilitas fleet dari satu dashboard.","p1.f1":"Ship Management System","p1.f2":"Crew Management","p1.f3":"Fleet Visibility Dashboard","p1.f4":"Operational Reporting",
+    "p2.c":"VesTrack","p2.n":"Vessel Tracking","p2.d":"Pantau posisi GPS, kondisi mesin via IoT, dan konsumsi bahan bakar seluruh armada secara real-time.","p2.f1":"Real-time GPS Positioning","p2.f2":"Live Engine Monitoring (IoT)","p2.f3":"Fuel Efficiency Tracking","p2.f4":"Geofence & Auto Alerts",
+    "p3.c":"PMS","p3.n":"Planned Maintenance System","p3.d":"Jadwal perawatan terencana, manajemen dokumen teknis, dan pengadaan spare parts dalam satu sistem.","p3.f1":"Planned Maintenance System","p3.f2":"Document Management","p3.f3":"Procurement Management","p3.f4":"Spare Parts Inventory",
+    "p4.c":"ISM Code","p4.n":"ISM Code Compliance","p4.d":"Pastikan kapal selalu patuh terhadap standar SOLAS & MARPOL secara otomatis — audit trail, dokumentasi, dan laporan compliance dari dashboard.","p4.f1":"ISM Code Documentation","p4.f2":"Automated Audit Trail","p4.f3":"Compliance Reporting (SOLAS & MARPOL)","p4.f4":"Safety Management System",
+    "p5.n":"Depo Management System","p5.d":"Manajemen depot terintegrasi untuk inventory, penyimpanan bahan bakar, dan supply chain.","p5.f1":"Inventory Management","p5.f2":"Fuel Storage Management","p5.f3":"Supply Chain Optimization","p5.f4":"Multi-Depot Management",
+    "pl.lbl":"Ship Management System","pl.h":"Satu Dashboard untuk Semua","pl.sub":"Pantau mesin secara real-time, kelola crew, tracking bahan bakar, dan akses semua dokumen penting — dari satu dashboard terpusat.",
+    "fg1.n":"Planned Maintenance","fg1.d":"Jadwal otomatis, spare parts terkelola, uptime meningkat.",
+    "fg2.n":"ISM Code","fg2.d":"Audit trail & laporan SOLAS/MARPOL otomatis.",
+    "fg3.n":"Document Mgmt","fg3.d":"Penyimpanan terpusat dengan version control penuh.",
+    "fg4.n":"Procurement","fg4.d":"Order tracking hingga vendor management.",
+    "io.lbl":"IoT Dashboard","io.h":"Data Real-Time, Keputusan Lebih Cepat","io.sub":"Sensor IoT terdepan mengirimkan data kondisi mesin, posisi, dan efisiensi bahan bakar langsung ke dashboard Anda.",
+    "tab.e":"Live Engine","tab.g":"GPS","tab.f":"Fuel","tab.c":"Crew",
+    "tp1.h":"Live Engine Monitoring","tp1.d":"Data RPM, tekanan, suhu, dan parameter kritis dari sensor IoT secara real-time.","tp1.n1":"RPM & Engine Load","tp1.d1":"Alert otomatis jika melampaui threshold yang ditentukan.","tp1.n2":"Temperatur & Tekanan","tp1.d2":"Sensor pada seluruh komponen kritikal mesin kapal.","tp1.n3":"Alert Anomali Otomatis","tp1.d3":"Notifikasi real-time sebelum terjadi breakdown.",
+    "tp2.h":"GPS Fleet Visibility","tp2.d":"Posisi, heading, dan kecepatan seluruh armada terpantau 24/7.","tp2.n1":"Real-time Positioning","tp2.d1":"Posisi diperbarui setiap menit dari GPS sensor.","tp2.n2":"Geofence & Route","tp2.d2":"Peringatan otomatis jika kapal keluar zona operasi.","tp2.n3":"Fleet Overview","tp2.d3":"Semua kapal dalam satu tampilan peta real-time.",
+    "tp3.h":"Fuel Efficiency Tracking","tp3.d":"Data flowmeter real-time untuk hemat hingga 40% biaya BBM.","tp3.n1":"Flowmeter Real-time","tp3.d1":"Konsumsi BBM diukur setiap saat dengan akurasi tinggi.","tp3.n2":"Fuel Analytics","tp3.d2":"Laporan harian, mingguan, bulanan dengan rekomendasi.","tp3.n3":"Cost Optimization","tp3.d3":"Hemat 30–40% biaya BBM dengan identifikasi pola konsumsi.",
+    "tp4.h":"Crew Management","tp4.d":"Sertifikat, jadwal dinas, dan dokumen crew dari satu platform.","tp4.n1":"Sertifikat & Kompetensi","tp4.d1":"Tracking masa berlaku dengan notifikasi renewal otomatis.","tp4.n2":"Jadwal & Rotasi","tp4.d2":"Manajemen jadwal dinas dan rotasi crew armada.","tp4.n3":"Digital Crew Files","tp4.d3":"Dokumen crew digital — akses kapan saja dari mana saja.",
+    "gps.t":"Fleet GPS — 7 Vessels","gps.s":"All Tracking","gps.sa":"Berlayar","gps.an":"Berlabuh","gps.sp":"Avg Speed",
+    "ts.lbl":"Dari Klien Kami","ts.h":"Dipercaya Profesional Maritim","ts.sub":"Hasil nyata dari pelaut dan engineer yang menggunakan MarineX setiap hari.",
+    "t1.q":"\"Monitoring mesin dan GPS real-time mengubah cara kami beroperasi. Deteksi masalah lebih awal, efisiensi bahan bakar meningkat 35% dalam tiga bulan pertama.\"",
+    "t1.n":"Capt. Budi Santoso","t1.r":"Master, PT Maju Jaya Shipping",
+    "t2.q":"\"ISM Code compliance yang dulunya makan waktu berhari-hari, sekarang selesai dalam hitungan jam. Alert PMS otomatis juga sangat efektif mencegah breakdown.\"",
+    "t2.n":"Ir. Siti Nurhaliza","t2.r":"Chief Engineer, PT Global Maritime",
+    "fq.lbl":"FAQ","fq.h":"Pertanyaan yang Sering Diajukan","fq.sub":"Butuh bantuan lebih lanjut? Tim kami siap 24/7.","fq.cta":"Hubungi Tim Kami",
+    "fq.q1":"Apa perbedaan VesMan, VesTrack, PMS, dan ISM Code?","fq.a1":"VesMan adalah platform manajemen armada terpusat. VesTrack fokus pada GPS & IoT monitoring real-time. PMS mengelola perawatan, dokumen, dan procurement. ISM Code Compliance memastikan kepatuhan SOLAS & MARPOL otomatis. Keempatnya terintegrasi penuh dalam ekosistem MarineX.",
+    "fq.q2":"Bisakah sistem terintegrasi dengan sensor IoT yang sudah ada?","fq.a2":"Ya. MarineX mendukung integrasi dengan berbagai merek sensor IoT. Tim teknis kami akan assessment dan konfigurasi tanpa perlu mengganti sensor yang sudah terpasang.",
+    "fq.q3":"Berapa penghematan bahan bakar yang bisa dicapai?","fq.a3":"Rata-rata klien menghemat 30–40% biaya bahan bakar. Sensor flowmeter real-time dikombinasikan dengan data kecepatan dan beban mesin untuk mengidentifikasi inefisiensi secara tepat.",
+    "fq.q4":"Kapan Depo Management System tersedia?","fq.a4":"Depo Management System sedang dalam tahap pengembangan akhir. Daftarkan diri untuk notifikasi peluncuran dan akses early bird.",
+    "fq.q5":"Bagaimana support 24/7 bekerja?","fq.a5":"Tim technical support MarineX siap 24/7 via WhatsApp, email, dan telepon. Paket Pro mendapatkan dedicated support engineer khusus untuk armada Anda.",
+    "ct.pill":"Siap Memulai?","ct.h1":"Tingkatkan Efisiensi Armada","ct.h2":"Mulai Hari Ini","ct.sub":"Bergabunglah dengan ratusan perusahaan maritim yang telah meningkatkan efisiensi operasional dan menurunkan biaya hingga 40% menggunakan MarineX.",
+    "ft.d":"Integrated Ship Fleet Management Platform — mengoptimalkan operasional kapal dengan teknologi IoT terdepan.",
+    "ft.o1":"Kantor Surabaya","ft.o2":"Kantor Jakarta","ft.p":"Produk","ft.f":"Fitur","ft.c":"Perusahaan",
+    "ft.a":"Tentang MarineX","ft.b":"Blog & Insights","ft.ca":"Karir","ft.pp":"Partner Program"
+  },
+  en:{
+    "nav.p":"Products","nav.pl":"Platform","nav.iot":"IoT","nav.faq":"FAQ","nav.pr":"Pricing","nav.lg":"Login","nav.ct":"Get Started",
+    "h.badge":"Indonesia's Trusted Maritime IoT Platform",
+    "h.h1":"Manage Your Fleet","h.h2":" More Efficiently","h.h3":"Integrated Ship Fleet Management & IoT Platform",
+    "h.lead":"Complete ecosystem for Ship Management System — PMS, ISM Code Compliance, Document Management, Crew Management — with Live Engine Monitoring, GPS Fleet Visibility, and real-time Fuel Efficiency Tracking.",
+    "h.c1":"Save up to 40% operational costs","h.c2":"24/7 real-time monitoring","h.c3":"ISM Code & SOLAS compliant","h.c4":"Integrates with existing IoT sensors",
+    "h.cta1":"Start Free Demo","h.cta2":"View Pricing",
+    "k1":"Vessels Monitored","k2":"Active IoT Sensors","k3":"System Uptime","k4":"Technical Support",
+    "cl.l":"Trusted by","cl.1":"Shipping Companies","cl.2":"Marine Engineering","cl.3":"Port Operations","cl.4":"Fleet Management",
+    "fc1.l":"ISM Compliance","fc1.s":"All requirements met","fc2.l":"Fuel Savings",
+    "d.alert":"ISM Code audit completed — all 24 requirements met","d.badge":"Compliant",
+    "pr.lbl":"Our Products","pr.h":"Five Integrated Solutions for Vessel Operations",
+    "pr.sub":"From fleet management and regulatory compliance to planned maintenance and IoT monitoring — all connected in one ecosystem.",
+    "lm":"Learn more","soon":"Coming Soon",
+    "p1.c":"VesMan","p1.n":"Vessel Management","p1.d":"Centralized platform to manage all fleet operations — crew, reports, and fleet visibility from one dashboard.","p1.f1":"Ship Management System","p1.f2":"Crew Management","p1.f3":"Fleet Visibility Dashboard","p1.f4":"Operational Reporting",
+    "p2.c":"VesTrack","p2.n":"Vessel Tracking","p2.d":"Monitor GPS position, engine condition via IoT, and fuel consumption across your fleet in real-time.","p2.f1":"Real-time GPS Positioning","p2.f2":"Live Engine Monitoring (IoT)","p2.f3":"Fuel Efficiency Tracking","p2.f4":"Geofence & Auto Alerts",
+    "p3.c":"PMS","p3.n":"Planned Maintenance System","p3.d":"Planned maintenance schedules, technical document management, and spare parts procurement in one system.","p3.f1":"Planned Maintenance System","p3.f2":"Document Management","p3.f3":"Procurement Management","p3.f4":"Spare Parts Inventory",
+    "p4.c":"ISM Code","p4.n":"ISM Code Compliance","p4.d":"Automatically ensure vessels comply with SOLAS & MARPOL — audit trail, documentation, and compliance reports from the dashboard.","p4.f1":"ISM Code Documentation","p4.f2":"Automated Audit Trail","p4.f3":"Compliance Reporting (SOLAS & MARPOL)","p4.f4":"Safety Management System",
+    "p5.n":"Depo Management System","p5.d":"Integrated depot management for inventory, fuel storage, and supply chain. In development.","p5.f1":"Inventory Management","p5.f2":"Fuel Storage Management","p5.f3":"Supply Chain Optimization","p5.f4":"Multi-Depot Management",
+    "pl.lbl":"Ship Management System","pl.h":"One Dashboard for Everything","pl.sub":"Monitor engines in real-time, manage crew, track fuel, and access critical documents — all from one centralized dashboard.",
+    "fg1.n":"Planned Maintenance","fg1.d":"Automated schedules, managed spare parts, improved uptime.",
+    "fg2.n":"ISM Code","fg2.d":"Automated audit trail & SOLAS/MARPOL compliance reports.",
+    "fg3.n":"Document Mgmt","fg3.d":"Centralized storage with full version control.",
+    "fg4.n":"Procurement","fg4.d":"Order tracking to vendor management.",
+    "io.lbl":"IoT Dashboard","io.h":"Real-Time Data, Faster Decisions","io.sub":"Leading IoT sensors deliver engine condition, position, and fuel efficiency data directly to your dashboard.",
+    "tab.e":"Live Engine","tab.g":"GPS","tab.f":"Fuel","tab.c":"Crew",
+    "tp1.h":"Live Engine Monitoring","tp1.d":"RPM, pressure, temperature, and critical parameters sent from IoT sensors in real-time.","tp1.n1":"RPM & Engine Load","tp1.d1":"Automatic alerts when thresholds are exceeded.","tp1.n2":"Temperature & Pressure","tp1.d2":"Sensors on all critical engine components.","tp1.n3":"Automatic Anomaly Alerts","tp1.d3":"Real-time notifications before breakdown occurs.",
+    "tp2.h":"GPS Fleet Visibility","tp2.d":"Position, heading, and speed of your entire fleet monitored 24/7.","tp2.n1":"Real-time Positioning","tp2.d1":"Position updated every minute from GPS sensors.","tp2.n2":"Geofence & Route","tp2.d2":"Automatic alerts if vessel deviates from operational zone.","tp2.n3":"Fleet Overview","tp2.d3":"All vessels on one map with real-time status.",
+    "tp3.h":"Fuel Efficiency Tracking","tp3.d":"Real-time flowmeter data to save up to 40% on fuel costs.","tp3.n1":"Real-time Flowmeter","tp3.d1":"Fuel consumption measured continuously with high accuracy.","tp3.n2":"Fuel Analytics","tp3.d2":"Daily, weekly, monthly reports with efficiency recommendations.","tp3.n3":"Cost Optimization","tp3.d3":"Save 30–40% on fuel costs by identifying consumption patterns.",
+    "tp4.h":"Crew Management","tp4.d":"Certificates, schedules, and crew documents for your fleet from one platform.","tp4.n1":"Certificates & Competency","tp4.d1":"Track certificate validity with automatic renewal notifications.","tp4.n2":"Schedule & Rotation","tp4.d2":"Manage duty schedules and crew rotation.","tp4.n3":"Digital Crew Files","tp4.d3":"All crew documents stored digitally — access anywhere.",
+    "gps.t":"Fleet GPS — 7 Vessels","gps.s":"All Tracking","gps.sa":"Sailing","gps.an":"Anchored","gps.sp":"Avg Speed",
+    "ts.lbl":"From Our Clients","ts.h":"Trusted by Maritime Professionals","ts.sub":"Real results from mariners and engineers using MarineX every day.",
+    "t1.q":"\"Real-time engine and GPS monitoring changed how we operate. We detect issues earlier — fuel efficiency improved by 35% in the first three months.\"",
+    "t1.n":"Capt. Budi Santoso","t1.r":"Master, PT Maju Jaya Shipping",
+    "t2.q":"\"ISM Code compliance that used to take days now takes hours. The automatic PMS alerts are also very effective at preventing unexpected breakdowns.\"",
+    "t2.n":"Ir. Siti Nurhaliza","t2.r":"Chief Engineer, PT Global Maritime",
+    "fq.lbl":"FAQ","fq.h":"Frequently Asked Questions","fq.sub":"Need more help? Our team is ready 24/7.","fq.cta":"Contact Our Team",
+    "fq.q1":"What's the difference between VesMan, VesTrack, PMS, and ISM Code?","fq.a1":"VesMan is the centralized fleet management platform. VesTrack focuses on real-time GPS & IoT monitoring. PMS manages maintenance, documents, and procurement. ISM Code Compliance ensures automatic SOLAS & MARPOL adherence. All four are fully integrated within the MarineX ecosystem.",
+    "fq.q2":"Can the system integrate with existing IoT sensors?","fq.a2":"Yes. MarineX supports integration with various IoT sensor brands. Our technical team will assess and configure without replacing existing sensors.",
+    "fq.q3":"How much fuel savings can be achieved?","fq.a3":"Clients average 30–40% savings on fuel costs. Real-time flowmeter data combined with speed and engine load identifies inefficient consumption patterns precisely.",
+    "fq.q4":"When will the Depo Management System be available?","fq.a4":"Depo Management System is in final development. Register for launch notifications and early bird access.",
+    "fq.q5":"How does 24/7 support work?","fq.a5":"Technical support is ready 24/7 via WhatsApp, email, and phone. Pro plan includes a dedicated support engineer assigned to your fleet.",
+    "ct.pill":"Ready to Start?","ct.h1":"Improve Fleet Efficiency","ct.h2":"Starting Today","ct.sub":"Join hundreds of maritime companies that have improved operational efficiency and reduced costs by up to 40% with MarineX.",
+    "ft.d":"Integrated Ship Fleet Management Platform — optimizing vessel operations with leading IoT technology.",
+    "ft.o1":"Surabaya Office","ft.o2":"Jakarta Office","ft.p":"Products","ft.f":"Features","ft.c":"Company",
+    "ft.a":"About MarineX","ft.b":"Blog & Insights","ft.ca":"Careers","ft.pp":"Partner Program"
+  }
+}
+
+let lang='id'
+function setLang(l){
+  lang=l
+  document.querySelectorAll('#ltID,#ltIDm').forEach(b=>b.classList.toggle('on',l==='id'))
+  document.querySelectorAll('#ltEN,#ltENm').forEach(b=>b.classList.toggle('on',l==='en'))
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n')
+    if(T[l][k]!==undefined)el.textContent=T[l][k]
+  })
+  document.documentElement.lang=l
+}
+
+let dark=true
+function toggleTheme(){
+  dark=!dark
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light')
+  const ic=dark?'🌙':'☀️'
+  document.getElementById('themeBtn').textContent=ic
+  document.getElementById('themeBtnM').textContent=ic
+}
+
+const scCta=()=>document.getElementById('cta').scrollIntoView({behavior:'smooth'})
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>40))
+
+let mO=false
+function togMob(){mO=!mO;document.getElementById('mob').style.display=mO?'flex':'none'}
+function clMob(){mO=false;document.getElementById('mob').style.display='none'}
+
+function swTab(id,btn){
+  document.querySelectorAll('.pv').forEach(b=>b.classList.remove('on'))
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'))
+  btn.classList.add('on')
+  document.getElementById('tp-'+id).classList.add('on')
+}
+
+function togFaq(btn){
+  const it=btn.closest('.fi')
+  const was=it.classList.contains('open')
+  document.querySelectorAll('.fi').forEach(i=>i.classList.remove('open'))
+  if(!was)it.classList.add('open')
+}
+
+// ── BARS ───────────────────────────────────────────────────────
+const bv=[4,7,5,9,6,8,4,10,7,6,9,8]
+const bc=['var(--blue)','var(--blue)','var(--amber)','var(--blue)','var(--green)','var(--blue)','var(--red)','var(--blue)','var(--green)','var(--blue)','var(--blue)','var(--teal)']
+function makeBars(id){
+  document.getElementById(id).innerHTML=bv.map((v,i)=>`<div class="db" style="flex:1;height:${v*4}px;background:${bc[i]};opacity:.6;border-radius:2px 2px 0 0"></div>`).join('')
+}
+makeBars('heroBars');makeBars('platBars')
+
+// ── SPARKLINES ──────────────────────────────────────────────────
+const sv=[30,45,38,55,48,62,50,58,45,70,65,72,60,68,55,75,70,80,72,85]
+function makeSpark(id){
+  document.getElementById(id).innerHTML=sv.map(v=>`<div class="sp ${v>65?'hi':''}" style="height:${v*.26}px"></div>`).join('')
+}
+makeSpark('sparkEl');makeSpark('heroSpark')
+
+setInterval(()=>{
+  ['sparkEl','heroSpark'].forEach(id=>{
+    const bars=document.querySelectorAll(`#${id} .sp`)
+    const nv=55+Math.random()*35
+    bars.forEach((b,i)=>{
+      if(i<bars.length-1){bars[i].style.height=bars[i+1].style.height;bars[i].classList.toggle('hi',parseInt(bars[i+1].style.height)>17)}
+      else{b.style.height=nv*.26+'px';b.classList.toggle('hi',nv>65)}
+    })
+  })
+},380)
+
+// ── REVEAL ─────────────────────────────────────────────────────
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}})
+},{threshold:.07})
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el))
+</script>
+</body>
+</html>
