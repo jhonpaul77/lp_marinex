@@ -59,6 +59,7 @@ button,a{transition:all .16s}
 .nav{
   position:fixed;top:0;left:0;right:0;z-index:1000;
   height:60px;display:flex;align-items:center;
+  /* padding sama persis .w — kiri kanan sejajar dengan konten */
   padding:0 2.5rem;
 }
 .nav.scrolled{
@@ -68,8 +69,17 @@ button,a{transition:all .16s}
   border-bottom:1px solid var(--br);
   box-shadow:0 1px 0 rgba(59,130,246,.06);
 }
-/* inner constrained to match content width, centered */
-.nav-inner{display:flex;align-items:center;width:100%;max-width:1300px;margin:0 auto;gap:.65rem}
+/* inner: max-width sama dgn .w, centered — logo|menu|buttons rata tengah */
+.nav-inner{
+  display:flex;align-items:center;
+  width:100%;max-width:1300px;margin:0 auto;
+  gap:.65rem;position:relative;
+}
+/* Nav links centered — logo kiri, links tengah, buttons kanan */
+.nav-links{
+  display:flex;align-items:center;gap:.05rem;
+  position:absolute;left:50%;transform:translateX(-50%);
+}
 .logo{display:flex;align-items:center;gap:.65rem;flex-shrink:0}
 .logo-sq{
   width:32px;height:32px;border-radius:7px;background:var(--blue);
@@ -79,7 +89,7 @@ button,a{transition:all .16s}
 .logo-wm{display:flex;flex-direction:column;line-height:1}
 .logo-name{font-size:.92rem;font-weight:800;color:var(--tx);letter-spacing:-.01em}
 .logo-tag{font-size:.57rem;font-weight:600;color:var(--tx3);letter-spacing:.07em;margin-top:.1rem;text-transform:uppercase}
-.nav-links{display:flex;align-items:center;gap:.05rem;margin-left:1.5rem}
+
 .nl{font-size:.82rem;font-weight:500;color:var(--tx2);padding:.35rem .72rem;border-radius:6px;cursor:pointer}
 .nl:hover{color:var(--tx);background:var(--sf2)}
 .nav-r{margin-left:auto;display:flex;align-items:center;gap:.55rem}
@@ -109,7 +119,7 @@ button,a{transition:all .16s}
   display:none;position:fixed;top:60px;inset-x:0;z-index:999;
   background:var(--nav);backdrop-filter:blur(18px);
   border-bottom:1px solid var(--br);
-  padding:1rem 2.5rem 1.5rem;flex-direction:column;gap:.2rem;
+  padding:1.25rem 2.5rem 1.75rem;flex-direction:column;gap:.2rem;
 }
 #mob .nl{padding:.6rem .72rem;font-size:.88rem}
 #mob .msep{height:1px;background:var(--br);margin:.6rem 0}
