@@ -59,6 +59,7 @@ button,a{transition:all .16s}
 .nav{
   position:fixed;top:0;left:0;right:0;z-index:1000;
   height:60px;display:flex;align-items:center;
+  padding:0 2.5rem;
 }
 .nav.scrolled{
   background:var(--nav);
@@ -67,7 +68,8 @@ button,a{transition:all .16s}
   border-bottom:1px solid var(--br);
   box-shadow:0 1px 0 rgba(59,130,246,.06);
 }
-.nav-inner{display:flex;align-items:center;width:100%;gap:.65rem}
+/* inner constrained to match content width, centered */
+.nav-inner{display:flex;align-items:center;width:100%;max-width:1300px;margin:0 auto;gap:.65rem}
 .logo{display:flex;align-items:center;gap:.65rem;flex-shrink:0}
 .logo-sq{
   width:32px;height:32px;border-radius:7px;background:var(--blue);
@@ -107,7 +109,7 @@ button,a{transition:all .16s}
   display:none;position:fixed;top:60px;inset-x:0;z-index:999;
   background:var(--nav);backdrop-filter:blur(18px);
   border-bottom:1px solid var(--br);
-  padding:1rem 2rem 1.5rem;flex-direction:column;gap:.2rem;
+  padding:1rem 2.5rem 1.5rem;flex-direction:column;gap:.2rem;
 }
 #mob .nl{padding:.6rem .72rem;font-size:.88rem}
 #mob .msep{height:1px;background:var(--br);margin:.6rem 0}
@@ -633,7 +635,6 @@ footer{padding:3.5rem 0 2.5rem;border-top:1px solid var(--br);background:var(--b
 
 <!-- ══ NAV ═════════════════════════════════════════════════════════════ -->
 <nav class="nav" id="nav">
-  <div class="w">
     <div class="nav-inner">
       <a class="logo" href="#">
         <div class="logo-sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 17l5-10 4 6 3-4 5 8H3z"/></svg></div>
@@ -664,7 +665,6 @@ footer{padding:3.5rem 0 2.5rem;border-top:1px solid var(--br);background:var(--b
         </svg>
       </button>
     </div>
-  </div>
 </nav>
 <div id="mob">
   <a class="nl" href="#products" onclick="clMob()" data-i18n="nav.p">Produk</a>
